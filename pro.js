@@ -4,11 +4,19 @@ const fileuploader = require('express-fileupload');
 const port = 2999;
 const mysql = require('mysql2');
 
-var sql = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    password: "Raman@12345678",
-    database:"ott"
+// var sql = mysql.createConnection({
+//     host: "127.0.0.1",
+//     user: "root",
+//     password: "Raman@12345678",
+//     database:"ott"
+//   });
+  var sql = mysql.createConnection({
+    host: "b2fgn0anptkjdf6km76w-mysql.services.clever-cloud.com",
+    user: "uf3lvy7rshsuo1pp",
+    password: "TjjD1MO3Xqyimq0kUtWx",
+    database:"b2fgn0anptkjdf6km76w",
+    keepAliveInitialDelay:10000,
+    enableKeepAlive:true
   });
   
   sql.connect(function(err) {
