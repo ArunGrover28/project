@@ -14,7 +14,6 @@
         
         $scope.jsonAry = [];
         $scope.search = [];
-        $scope.picture = ["1","2","3","4","5"];
         
         $scope.fill = function() {
           let url = "/fill-movie";
@@ -24,7 +23,7 @@
                 for(let i = 0; i < $scope.jsonAry.length; i++) {
                    $scope.search.push($scope.jsonAry[i].mname);
                 }
-                // alert($scope.search);
+               
               }, function(error) {
                   console.error(error);
               });
@@ -91,7 +90,7 @@
               <li><a class="dropdown-item" href="#">Action</a></li>
               <li><a class="dropdown-item" href="#">Romantic</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li><a class="dropdown-item" href="#">Something else </a></li>
             </ul>
           </li>
           <li class="nav-item">
