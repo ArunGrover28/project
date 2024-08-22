@@ -3,6 +3,20 @@ const app = express();
 const fileuploader = require('express-fileupload');
 const port = 2999;
 const mysql = require('mysql2');
+app.use(fileuploader({
+    useTempFiles:true
+}))
+
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary with your credentials
+cloudinary.config({
+  cloud_name: 'dj3r7qbxf',
+  api_key: '547498518475695',
+  api_secret: 'c48Q2uzWcXotI2JwjCaxCUDSMY4'
+});
+
+
 
 // var sql = mysql.createConnection({
 //     host: "127.0.0.1",
@@ -24,7 +38,7 @@ const mysql = require('mysql2');
     console.log("Connected!");
   });
 
-app.use(fileuploader());
+
 app.use(express.static('public'));
 app.use(express.urlencoded(true));
 
@@ -53,30 +67,65 @@ app.get("/in",function(req,res){
     res.sendFile(__dirname+"/public/insert.html");
 })
 
-app.post("/insert",function(req,res){
-    // let movieFile = req.files.moviename;
-    // let otherinfo = req.body.otherinfo;
+// app.post("/insert",function(req,res){
+//     // let movieFile = req.files.moviename;
+//     // let otherinfo = req.body.otherinfo;
 
+//     let mname = req.body.mname;
+//     let mdiscription = req.body.mdiscription;
+//     let mpic = req.files.mpic;
+//     let mlink = req.body.mlink;
+
+//     cloudinary.uploader.upload(mpic.tempFilePath,(err,result)=>{
+//         console.log(result);
+//         if(err){
+//             console.log(err);
+//         }
+//     })
+//     // mpic.mv(__dirname + '/public/upload/' + mpic.name, function(err) {
+//     //     if (err)
+//     //         return res.status(500).send(err);
+
+//     //     // console.log(movieFile);
+//     //     // console.log(otherinfo);
+//     //     console.log("moved succesfully")
+//     // });
+//     sql.query("insert into film (mname,mpic,mdiscription,mlink)value(?,?,?,?)",[mname,mpic.name,mdiscription,mlink],function(err,result){
+//         if(err){
+//             console.log(err.message);
+//         }
+//         res.send("inserted succesfully");
+//     })
+
+// })
+app.post("/insert", function (req, res) {
     let mname = req.body.mname;
     let mdiscription = req.body.mdiscription;
     let mpic = req.files.mpic;
     let mlink = req.body.mlink;
-    mpic.mv(__dirname + '/public/upload/' + mpic.name, function(err) {
-        if (err)
-            return res.status(500).send(err);
-
-        // console.log(movieFile);
-        // console.log(otherinfo);
-        console.log("moved succesfully")
-    });
-    sql.query("insert into film (mname,mpic,mdiscription,mlink)value(?,?,?,?)",[mname,mpic.name,mdiscription,mlink],function(err,result){
-        if(err){
+  
+    cloudinary.uploader.upload(mpic.tempFilePath, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send("Upload failed.");
+      }
+  
+      const cloudinaryUrl = result.url;
+  
+      sql.query(
+        "INSERT INTO film (mname, mpic, mdiscription, mlink) VALUES (?, ?, ?, ?)",
+        [mname, cloudinaryUrl, mdiscription, mlink],
+        function (err, result) {
+          if (err) {
             console.log(err.message);
+            return res.status(500).send("Database insert failed.");
+          }
+          res.send("Inserted successfully.");
         }
-        res.send("inserted succesfully");
-    })
-
-})
+      );
+    });
+  });
+  
 
 app.get("/fill-movie",function(req,res){
     sql.query("select * from film",[],function(err,result){
